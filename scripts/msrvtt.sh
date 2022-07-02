@@ -2,7 +2,7 @@ ANNO_DIR=/var/scratch/pbagad/datasets/MSR-VTT/msrvtt_data
 VIDEO_DIR=/var/scratch/pbagad/datasets/MSR-VTT/MSRVTT/videos/all/
 
 
-python -w ignore -m torch.distributed.launch --nproc_per_node=3 \
+python -W ignore -m torch.distributed.launch --nproc_per_node=3 \
 main_task_retrieval.py --do_train --num_thread_reader=0 \
 --epochs=5 --batch_size=72 --n_display=50 \
 --train_csv ${ANNO_DIR}/MSRVTT_train.9k.csv \
