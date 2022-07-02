@@ -88,10 +88,21 @@ class DiDeMo_DataLoader(Dataset):
         for root, dub_dir, video_files in os.walk(self.features_path):
             for video_file in video_files:
                 video_id_ = video_file
-                if video_id_ not in video_ids:
-                    continue
-                file_path_ = os.path.join(root, video_file)
-                video_dict[video_id_] = file_path_
+                
+                if video_id_ in video_ids:
+                    use_id = video_id_
+                    key_id = video_id_
+                else:
+                    if video_id_.split(".mp4")[0] in video_ids:
+                        use_id = video_id_
+                        key_id = video_id_.split(".mp4")[0]
+                    else:
+                        continue
+                # if video_id_ not in video_ids:
+                #     continue
+                file_path_ = os.path.join(root, use_id)
+                assert os.path.exists(file_path_)
+                video_dict[key_id] = file_path_
 
         self.caption_dict = caption_dict
         self.video_dict = video_dict
@@ -220,3 +231,19 @@ class DiDeMo_DataLoader(Dataset):
         pairs_text, pairs_mask, pairs_segment, starts, ends = self._get_text(video_id, sub_id)
         video, video_mask = self._get_rawvideo(video_id, starts, ends)
         return pairs_text, pairs_mask, pairs_segment, video, video_mask
+
+
+if __name__ == "__main__":
+    from modules.tokenization_clip import SimpleTokenizer as ClipTokenizer
+    
+    tokenizer = ClipTokenizer()
+    
+    dataset = DiDeMo_DataLoader(
+        subset="train",
+        data_path="/var/scratch/pbagad/datasets/DiDeMo/",
+        features_path="/var/scratch/pbagad/datasets/DiDeMo/videos/",
+        tokenizer=tokenizer,
+    )
+    print("Number of samples: {}".format(len(dataset)))
+    
+    
